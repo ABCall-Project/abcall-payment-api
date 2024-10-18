@@ -20,23 +20,18 @@ class InvoiceDetailPostgresqlRepository(InvoiceDetailRepository):
         session.add(self._to_model(invoice_detail))
         session.commit()
 
-    def get_unfactured_issue_ids(self, issue_ids_to_check: List[UUID]) -> List[UUID]:
+   
+        
+    
+    def get_factured_issue_ids(self) -> List[UUID]:
         with self.Session() as session:
             factured_issue_ids = (
                 session.query(InvoiceDetailModelSqlAlchemy.issue_id)
                 .filter(InvoiceDetailModelSqlAlchemy.issue_id.isnot(None))
-                .filter(InvoiceDetailModelSqlAlchemy.issue_id.in_(issue_ids_to_check))
                 .distinct()
                 .all()
             )
-
-            factured_issue_ids = {issue_id for (issue_id,) in factured_issue_ids}
-
-            unfactured_issue_ids = [
-                issue_id for issue_id in issue_ids_to_check if issue_id not in factured_issue_ids
-            ]
-
-            return unfactured_issue_ids
+            return [issue_id for (issue_id,) in factured_issue_ids]
 
     def _to_model(self, invoice_detail: InvoiceDetail) -> InvoiceDetailModelSqlAlchemy:
         return InvoiceDetailModelSqlAlchemy(
@@ -63,3 +58,11 @@ class InvoiceDetailPostgresqlRepository(InvoiceDetailRepository):
             
         )
     
+
+    def get_total_amount_by_invoice_id(self, invoice_id: UUID) -> float:
+        session = self.Session()
+        try:
+            total_amount = session.query(func.sum(InvoiceDetailModelSqlAlchemy.total_amount)).filter_by(invoice_id=invoice_id).scalar()
+            return total_amount if total_amount else 0.0
+        finally:
+            session.close()

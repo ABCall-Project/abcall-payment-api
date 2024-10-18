@@ -12,6 +12,7 @@ from  config import Config
 from .customer_service import CustomerService
 from .issues_service import IssueService
 from ..domain.constants import *
+from uuid import UUID
 class InvoiceService:
     def __init__(self, repository: InvoiceRepository,customer_repository: CustomerRepository=None,invoice_detail_repository: InvoiceDetailRepository=None):
         self.log = Logger()
@@ -94,17 +95,22 @@ class InvoiceService:
             issue_list=self.issue_service.get_issues_by_customer_list(item.id, year, month)
             
            
+            for item in issue_list:
+                self.log.info(f'issues solveds {item.id}')
+                self.log.info(f'Type of issue.id: {type(item.id)}')
+                
             if issue_list:
-                issue_list_ids = [issue.id for issue in issue_list]
-
-            
                 #consultar los incidentes reportados y si existen entonces crear un detalle por cada incidente reportado
-                missing_list_issues=self.invoice_detail_repository.get_unfactured_issue_ids(issue_list_ids)
-                self.log.info(f'missing issue list {missing_list_issues}')
-                missing_ids_set = set(missing_list_issues)
+                
+                all_billed_issues=self.invoice_detail_repository.get_factured_issue_ids()
+
+                for item in all_billed_issues:
+                    self.log.info(f'issues billed {item}')
+                    self.log.info(f'Type of billed_id: {type(item)}')
 
                 for issue in issue_list:
-                    if issue.id in missing_ids_set:  
+                    issue_uuid = UUID(issue.id)
+                    if issue_uuid not in all_billed_issues:
                         new_detail = InvoiceDetail(
                             id=uuid.uuid4(),
                             detail=f'cost by issue solved {issue.id}',
@@ -115,7 +121,15 @@ class InvoiceService:
                             total_amount=issue_fee,
                             chanel_plan_id=issue.channel_plan_id 
                         )
-                    self.invoice_detail_repository.create_invoice_detail(new_detail)
+                        self.invoice_detail_repository.create_invoice_detail(new_detail)
+
+
+            #updating amount  invoice
+            invoice_to_update=self.repository.get_invoice_by_id(invoice_id)
+            total_value=self.invoice_detail_repository.get_total_amount_by_invoice_id(invoice_id)
+            invoice_to_update.amount=total_value
+            invoice_to_update.total_amount=total_value
+            self.repository.update_invoice(invoice_to_update)
 
 
             # now+=1

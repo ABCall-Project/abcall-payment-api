@@ -34,13 +34,24 @@ class InvoicePostgresqlRepository(InvoiceRepository):
 
     def invoice_by_month_year_by_customer(self, year, month,customer_id):
         session = self.Session()
+        try:
+            invoice=session.query(InvoiceModelSqlAlchemy.id).filter(
+                extract('year', InvoiceModelSqlAlchemy.created_at) == year,
+                extract('month', InvoiceModelSqlAlchemy.created_at) == month,
+                InvoiceModelSqlAlchemy.customer_id==customer_id).first()
+            
+            return invoice[0] if invoice else None
+        finally:
+            session.close()
 
-        invoice=session.query(InvoiceModelSqlAlchemy.id).filter(
-            extract('year', InvoiceModelSqlAlchemy.created_at) == year,
-            extract('month', InvoiceModelSqlAlchemy.created_at) == month,
-            InvoiceModelSqlAlchemy.customer_id==customer_id).first()
-          
-        return invoice[0] if invoice else None
+
+    def get_invoice_by_id(self, invoice_id: UUID) -> Optional[Invoice]:
+        session = self.Session()
+        try:
+            invoice_model = session.query(InvoiceModelSqlAlchemy).filter_by(id=invoice_id).first()
+            return self._from_model(invoice_model) if invoice_model else None
+        finally:
+            session.close()
 
     
 
@@ -78,25 +89,30 @@ class InvoicePostgresqlRepository(InvoiceRepository):
     
     def create_invoice(self,invoice: Invoice):
         session = self.Session()
-        session.add(self._to_model(invoice))
-        session.commit()
+        try:
+            session.add(self._to_model(invoice))
+            session.commit()
+        finally:
+            session.close()
 
     def update_invoice(self,invoice: Invoice):
         session = self.Session()
-        session.query(InvoiceModelSqlAlchemy).filter_by(id=invoice.id).update(
-            { 
-                "customer_id":str(invoice.customer_id),
-                "invoice_id":invoice.invoice_id,
-                "payment_id":str(invoice.payment_id),
-                "amount":str(invoice.amount),
-                "tax":str(invoice.tax),
-                "total_amount":str(invoice.total_amount),
-                "subscription":invoice.subscription,
-                "subscription_id":str(invoice.subscription_id),
-                "status":invoice.status,
-                "created_at": invoice.created_at.isoformat() if invoice.created_at else None,
-                "updated_at": invoice.updated_at.isoformat() if invoice.updated_at else None,
-                "generation_date": invoice.generation_date.isoformat() if invoice.generation_date else None,
-                "period":invoice.period.isoformat() if invoice.generation_date else None,
-            })
-        session.commit()
+        try:
+
+            session.query(InvoiceModelSqlAlchemy).filter_by(id=invoice.id).update(
+                { 
+                    "customer_id":str(invoice.customer_id),
+                    "invoice_id":invoice.invoice_id,
+                    "plan_id":str(invoice.plan_id),
+                    "amount":str(invoice.amount),
+                    "tax":str(invoice.tax),
+                    "total_amount":str(invoice.total_amount),
+                    "status":invoice.status,
+                    "created_at": invoice.created_at.isoformat() if invoice.created_at else None,
+                    "start_at": invoice.start_at.isoformat() if invoice.start_at else None,
+                    "generation_date": invoice.generation_date.isoformat() if invoice.generation_date else None,
+                    "end_at":invoice.end_at.isoformat() if invoice.end_at else None,
+                })
+            session.commit()
+        finally:
+            session.close()
