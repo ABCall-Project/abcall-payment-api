@@ -51,7 +51,7 @@ jobs:
           python-version: '3.9'
     - name: docker build 🐳
       run: |
-        docker build . -t=abcall-payment-api:build-$GITHUB_RUN_NUMBER
+        docker build . -t=abcall-issues-api:build-$GITHUB_RUN_NUMBER
     - name: Validate results with errors
       if: ${{ failure() }}
       env:

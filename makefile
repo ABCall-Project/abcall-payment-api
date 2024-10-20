@@ -22,7 +22,7 @@ run-tests:
 	 FLASK_ENV=test python -m unittest discover -s tests -p '*Test.py' -v
 
 run-tests-coverage:
-	 coverage run -m unittest discover
+	 coverage run -m unittest discover -s tests -p '*Test.py' -v
 	 coverage report -m
 	 coverage html
 	 coverage report --fail-under=50
@@ -51,12 +51,6 @@ docker-dev-down:
 
 create-database:
 	docker exec payment-local-db psql -U develop -d payment-db -f /docker-entrypoint-initdb.d/init.sql
-
-generate-data:
-	docker exec payment-local-db psql -U develop -d payment-db -f /docker-entrypoint-initdb.d/invoiceFakeData.sql
-
-generate-customer-data:
-	docker exec payment-local-db psql -U develop -d payment-db -f /docker-entrypoint-initdb.d/customerFakeData.sql
 
 kubernetes-up:
 	kubectl apply -f kubernetes/k8s-configMap.yaml

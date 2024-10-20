@@ -10,17 +10,17 @@ class InvoiceMapper:
     def _to_dict(self, invoice:Invoice):
         return {
             'id': str(invoice.id),
-            'invoiceId': invoice.invoice_id,
+            'invoiceId': str(invoice.invoice_id),
             'customerId': str(invoice.customer_id),
-            'paymentId': str(invoice.payment_id) if invoice.payment_id else None,
+            'planId': str(invoice.plan_id) if str(invoice.plan_id) else None,
             'amount': float(invoice.amount),
             'tax': float(invoice.tax),
             'totalAmount': float(invoice.total_amount),
-            'subscription': invoice.subscription,
-            'subscriptionId': str(invoice.subscription_id),
-            'status': invoice.status,
+            'status': str(invoice.status),
             'createdAt': invoice.created_at.isoformat(),
-            'updatedAt': invoice.updated_at.isoformat(),
+            'startAt': invoice.start_at.isoformat(),
             'generationDate': invoice.generation_date.isoformat(),
-            'period': invoice.period.isoformat()
+            'endAt': invoice.end_at.isoformat(),
+            'plan_amount':float(invoice.plan_amount),
+            'issues_amount':float(invoice.issues_amount)
         }

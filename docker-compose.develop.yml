@@ -27,6 +27,8 @@ services:
     command: celery -A flaskr.tasks.task.celery worker --loglevel=info
     container_name: abcall-payment-local-worker
     restart: always
+    volumes:
+      - ".:/app"
     env_file:
       - .env.local
     tty: true
@@ -46,6 +48,8 @@ services:
     command: celery -A flaskr.tasks.task.celery beat --loglevel=info
     container_name: abcall-payment-local-beat
     restart: always
+    volumes:
+      - ".:/app"
     env_file:
       - .env.local
 

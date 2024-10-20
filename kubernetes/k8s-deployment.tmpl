@@ -1,0 +1,80 @@
+###################################
+# abcall-payment-api
+###################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: abcall-payment-api
+  labels:
+    app: abcall-payment-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: abcall-payment-api
+  template:
+    metadata:
+      labels:
+        app: abcall-payment-api
+    spec:
+      containers:
+        - name: abcall-payment-api
+          image: abcall.azurecr.io/abcall-payment-api:{{IMAGE_TAG}}
+          env:
+            - name: "FLASK_APP"
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: FLASK_APP
+            - name: "FLASK_ENV"
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: FLASK_ENV
+            - name: "APP_NAME"
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: APP_NAME
+            - name: "TOPIC_SCHEDULE"
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: TOPIC_SCHEDULE
+            - name: "MINUTES_TO_EXECUTE_INVOICES"
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: MINUTES_TO_EXECUTE_INVOICES
+            - name: "URL_REPORTS_SERVICE"
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: URL_REPORTS_SERVICE
+            - name: "DATABASE_URI"
+              valueFrom:
+                secretKeyRef:
+                  name: payment-secrets
+                  key: DATABASE_URI
+            - name: "SCHEDULE_BROKER"
+              valueFrom:
+                secretKeyRef:
+                  name: payment-secrets
+                  key: SCHEDULE_BROKER
+          ports:
+            - containerPort: 3005
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: abcall-payment-api-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: abcall-payment-api
+  ports:
+    - protocol: TCP
+      port: 3005
+      targetPort: 3005
