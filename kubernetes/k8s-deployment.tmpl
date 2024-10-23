@@ -51,6 +51,16 @@ spec:
                 configMapKeyRef:
                   name: payment-configmap
                   key: URL_REPORTS_SERVICE
+            - name: "CUSTOMER_API_PATH"
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: CUSTOMER_API_PATH
+            - name: "ISSUE_API_PATH"
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-configmap
+                  key: ISSUE_API_PATH
             - name: "DATABASE_URI"
               valueFrom:
                 secretKeyRef:
