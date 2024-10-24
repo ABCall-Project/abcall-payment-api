@@ -81,9 +81,12 @@ jobs:
 
       - name: Deploy to AKS 🚀
         run: |
+          DATABASE_URI="${{ secrets.DATABASE_URI }}"
+          SCHEDULE_BROKER="${{ secrets.SCHEDULE_BROKER }}"
           sed "s/{{IMAGE_TAG}}/build-${GITHUB_RUN_NUMBER}/g" ./kubernetes/k8s-deployment.tmpl > kubernetes/new-k8s-deployment.yaml
-          sed "s/{{DATABASE_URI}}/${DATABASE_URI}/g" ./kubernetes/k8s-secrets.tmpl > kubernetes/k8s-secrets.yaml
-          sed "s/{{SCHEDULE_BROKER}}/${SCHEDULE_BROKER}/g" ./kubernetes/k8s-secrets.tmpl > kubernetes/k8s-secrets.yaml
+          sed -e "s|{{DATABASE_URI}}|${DATABASE_URI}|g" \
+          -e "s|{{SCHEDULE_BROKER}}|${SCHEDULE_BROKER}|g" \
+          ./kubernetes/k8s-secrets.tmpl > kubernetes/k8s-secrets.yaml
           kubectl apply -f kubernetes/k8s-secrets.yaml
           kubectl apply -f kubernetes/k8s-configMap.yaml
           kubectl apply -f kubernetes/new-k8s-deployment.yaml
