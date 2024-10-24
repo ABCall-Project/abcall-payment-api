@@ -10,4 +10,4 @@ data:
   MINUTES_TO_EXECUTE_INVOICES: "10"
   URL_REPORTS_SERVICE: "http://abcall-reports-api-service:3008"
   CUSTOMER_API_PATH: "http://api-customer-api-service:3003"
-  ISSUE_API_PATH: "http://api-issue-api-service:3007"
+  ISSUE_API_PATH: "http://api-issues-api-service:3007"
