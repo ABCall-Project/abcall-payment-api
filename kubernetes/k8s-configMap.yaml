@@ -7,7 +7,7 @@ data:
   FLASK_ENV: "production"
   APP_NAME: "abcall-payment-api"
   TOPIC_SCHEDULE: "invoices-schedule"
-  MINUTES_TO_EXECUTE_INVOICES: "10"
+  MINUTES_TO_EXECUTE_INVOICES: "30"
   URL_REPORTS_SERVICE: "http://abcall-reports-api-service:3008"
   CUSTOMER_API_PATH: "http://abcall-customer-api-service:3003"
   ISSUE_API_PATH: "http://abcall-issues-api-service:3007"
