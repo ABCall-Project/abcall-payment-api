@@ -24,8 +24,8 @@ def scheduled_generate_invoice_task():
  
     
     
-    repository_invoice = InvoicePostgresqlRepository(config.DATABASE_URI)
-    repository_detail_invoice=InvoiceDetailPostgresqlRepository(config.DATABASE_URI)
+    repository_invoice = InvoicePostgresqlRepository()
+    repository_detail_invoice=InvoiceDetailPostgresqlRepository()
     invoice_service=InvoiceService(repository_invoice,None,repository_detail_invoice)
     invoice_service.generate_invoices()
 
