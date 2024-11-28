@@ -18,6 +18,13 @@ run:
 		flask run -p $(PORT); \
 	fi
 
+run-docker:
+ifeq ($(strip $(PORT)),)
+	flask run -h 0.0.0.0
+else
+	flask run -p $(PORT) -h 0.0.0.0
+endif
+
 run-tests:
 	 make docker-test-up
 	 FLASK_ENV=test python -m unittest discover -s tests -p '*Test.py' -v
@@ -31,12 +38,7 @@ run-tests-coverage:
 	 coverage report --fail-under=80
 	 make docker-test-down
 
-run-docker:
-ifeq ($(strip $(PORT)),)
-	flask run -h 0.0.0.0
-else
-	flask run -p $(PORT) -h 0.0.0.0
-endif
+
 
 docker-gunicorn:
 	  gunicorn -w 4 --bind 127.0.0.1:$(PORT) wsgi:app
@@ -65,12 +67,12 @@ create-database:
 	docker exec payment-local-db psql -U develop -d payment-db -f /docker-entrypoint-initdb.d/init.sql
 
 docker-db-truncate:
-	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE invoice_detail CASCADE;"
-	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE payment CASCADE;"
-	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE invoice CASCADE;"
-	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE invoice_status CASCADE;"
-	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE payment_method CASCADE;"
-	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE payment_status CASCADE;"
+	docker exec payment-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE invoice_detail CASCADE;"
+	docker exec payment-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE payment CASCADE;"
+	docker exec payment-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE invoice CASCADE;"
+	docker exec payment-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE invoice_status CASCADE;"
+	docker exec payment-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE payment_method CASCADE;"
+	docker exec payment-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE payment_status CASCADE;"
 
 
 
