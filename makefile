@@ -64,6 +64,21 @@ docker-test-down:
 create-database:
 	docker exec payment-local-db psql -U develop -d payment-db -f /docker-entrypoint-initdb.d/init.sql
 
+docker-db-truncate:
+	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE invoice_detail CASCADE;"
+	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE payment CASCADE;"
+	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE invoice CASCADE;"
+	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE invoice_status CASCADE;"
+	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE payment_method CASCADE;"
+	docker exec customer-test-db psql -U develop -d payment-db  -c  "TRUNCATE TABLE payment_status CASCADE;"
+
+
+
+
+
+
+
+
 kubernetes-up:
 	kubectl apply -f kubernetes/k8s-configMap.yaml
 	kubectl apply -f kubernetes/k8s-secrets.yaml
