@@ -73,7 +73,7 @@ class TestInvoiceDetailPostgresqlRepository(unittest.TestCase):
 
         result = self.repo.get_total_amount_by_invoice_id(invoice_id)
 
-        self.assertEqual(0)
+        self.assertEqual(result,0)
 
     def test_get_total_amount_by_invoice_id_zero(self):
         # Mock data
