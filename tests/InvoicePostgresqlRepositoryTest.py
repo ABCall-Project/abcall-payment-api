@@ -5,6 +5,8 @@ from datetime import datetime
 from flaskr.infrastructure.databases.invoice_postgresql_repository import InvoicePostgresqlRepository
 from flaskr.infrastructure.databases.model_sqlalchemy import InvoiceModelSqlAlchemy
 from flaskr.domain.models import Invoice
+#flaskr.infrastructure.databases.postgres.db.Session
+
 
 
 class TestInvoicePostgresqlRepository(unittest.TestCase):
@@ -25,7 +27,7 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
                 amount=100.0,
                 tax=10.0,
                 total_amount=110.0,
-                status=str(uuid4()),
+                status=uuid4(),
                 created_at=datetime.utcnow(),
                 generation_date=datetime.utcnow(),
                 start_at=datetime.utcnow(),
@@ -54,7 +56,7 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
                 amount=100.0,
                 tax=10.0,
                 total_amount=110.0,
-                status=str(uuid4()),
+                status=uuid4(),
                 created_at=datetime.utcnow(),
                 generation_date=datetime.utcnow(),
                 start_at=datetime.utcnow(),
@@ -70,7 +72,7 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
                 amount=200.0,
                 tax=20.0,
                 total_amount=220.0,
-                status=str(uuid4()),
+                status=uuid4(),
                 created_at=datetime.utcnow(),
                 generation_date=datetime.utcnow(),
                 start_at=datetime.utcnow(),
@@ -113,7 +115,7 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
             amount=150.0,
             tax=15.0,
             total_amount=165.0,
-            status=str(uuid4()),
+            status=uuid4(),
             created_at=datetime.utcnow(),
             generation_date=datetime.utcnow(),
             start_at=datetime.utcnow(),
@@ -141,7 +143,7 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
             amount=200.0,
             tax=20.0,
             total_amount=220.0,
-            status="UNPAID",
+            status=str(uuid4()),  # Using UUID as required
             created_at=datetime.utcnow(),
             start_at=datetime.utcnow(),
             generation_date=datetime.utcnow(),
@@ -167,7 +169,7 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
             amount=250.0,
             tax=25.0,
             total_amount=275.0,
-            status="PAID",
+            status=str(uuid4()),  # Using UUID as required
             created_at=datetime.utcnow(),
             start_at=datetime.utcnow(),
             generation_date=datetime.utcnow(),
@@ -186,7 +188,7 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
     def test_sum_total_amount_by_customer_and_status(self):
         # Mock data
         customer_id = uuid4()
-        status = str(uuid4())
+        status = uuid4()
         total_amount = 500.0
 
         session = self.session_mock()
