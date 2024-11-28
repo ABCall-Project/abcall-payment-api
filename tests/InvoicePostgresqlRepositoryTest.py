@@ -130,59 +130,6 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
         self.assertIsNone(result)
 
 
-
-    # def test_create_invoice(self):
-    #     # Mock data
-    #     invoice = Invoice(
-    #         id=uuid4(),
-    #         customer_id=uuid4(),
-    #         invoice_id="INV003",
-    #         plan_id=uuid4(),
-    #         amount=200.0,
-    #         tax=20.0,
-    #         total_amount=220.0,
-    #         status=str(uuid4()),  # Using UUID as required
-    #         created_at=datetime.utcnow(),
-    #         start_at=datetime.utcnow(),
-    #         generation_date=datetime.utcnow(),
-    #         end_at=datetime.utcnow(),
-    #         plan_amount=180.0,
-    #         issues_amount=40.0
-    #     )
-
-    #     session = self.session_mock()
-    #     session.add.return_value = None
-
-    #     self.repo.create_invoice(invoice)
-
-    #     session.add.assert_called_once()
-
-    # def test_update_invoice(self):
-    #     # Mock data
-    #     invoice = Invoice(
-    #         id=uuid4(),
-    #         customer_id=uuid4(),
-    #         invoice_id="INV004",
-    #         plan_id=uuid4(),
-    #         amount=250.0,
-    #         tax=25.0,
-    #         total_amount=275.0,
-    #         status=str(uuid4()),  # Using UUID as required
-    #         created_at=datetime.utcnow(),
-    #         start_at=datetime.utcnow(),
-    #         generation_date=datetime.utcnow(),
-    #         end_at=datetime.utcnow(),
-    #         plan_amount=220.0,
-    #         issues_amount=50.0
-    #     )
-
-    #     session = self.session_mock()
-    #     session.query().filter_by().update.return_value = None
-
-    #     self.repo.update_invoice(invoice)
-
-    #     session.query().filter_by().update.assert_called_once()
-
     def test_sum_total_amount_by_customer_and_status(self):
         # Mock data
         customer_id = uuid4()
