@@ -21,12 +21,18 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
             InvoiceModelSqlAlchemy(
                 id=uuid4(),
                 customer_id=customer_id,
-                invoice_id=uuid4(),
+                invoice_id="INV001",
                 amount=100.0,
                 tax=10.0,
                 total_amount=110.0,
-                status="PAID",
-                created_at=datetime.utcnow()
+                status=str(uuid4()),
+                created_at=datetime.utcnow(),
+                generation_date=datetime.utcnow(),
+                start_at=datetime.utcnow(),
+                end_at=datetime.utcnow(),
+                plan_amount=90.0,
+                issues_amount=20.0,
+                plan_id=uuid4()
             )
         ]
 
@@ -44,22 +50,34 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
             InvoiceModelSqlAlchemy(
                 id=uuid4(),
                 customer_id=uuid4(),
-                invoice_id=uuid4(),
+                invoice_id="INV001",
                 amount=100.0,
                 tax=10.0,
                 total_amount=110.0,
-                status="PAID",
-                created_at=datetime.utcnow()
+                status=str(uuid4()),
+                created_at=datetime.utcnow(),
+                generation_date=datetime.utcnow(),
+                start_at=datetime.utcnow(),
+                end_at=datetime.utcnow(),
+                plan_amount=90.0,
+                issues_amount=20.0,
+                plan_id=uuid4()
             ),
             InvoiceModelSqlAlchemy(
                 id=uuid4(),
                 customer_id=uuid4(),
-                invoice_id=uuid4(),
+                invoice_id="INV002",
                 amount=200.0,
                 tax=20.0,
                 total_amount=220.0,
-                status="UNPAID",
-                created_at=datetime.utcnow()
+                status=str(uuid4()),
+                created_at=datetime.utcnow(),
+                generation_date=datetime.utcnow(),
+                start_at=datetime.utcnow(),
+                end_at=datetime.utcnow(),
+                plan_amount=180.0,
+                issues_amount=40.0,
+                plan_id=uuid4()
             )
         ]
 
@@ -91,12 +109,18 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
         mock_invoice = InvoiceModelSqlAlchemy(
             id=invoice_id,
             customer_id=uuid4(),
-            invoice_id=uuid4(),
+            invoice_id="INV001",
             amount=150.0,
             tax=15.0,
             total_amount=165.0,
-            status="PAID",
-            created_at=datetime.utcnow()
+            status=str(uuid4()),
+            created_at=datetime.utcnow(),
+            generation_date=datetime.utcnow(),
+            start_at=datetime.utcnow(),
+            end_at=datetime.utcnow(),
+            plan_amount=140.0,
+            issues_amount=30.0,
+            plan_id=uuid4()
         )
 
         session = self.session_mock()
@@ -112,12 +136,18 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
         invoice = Invoice(
             id=uuid4(),
             customer_id=uuid4(),
-            invoice_id=uuid4(),
+            invoice_id="INV003",
+            plan_id=uuid4(),
             amount=200.0,
             tax=20.0,
             total_amount=220.0,
             status="UNPAID",
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
+            start_at=datetime.utcnow(),
+            generation_date=datetime.utcnow(),
+            end_at=datetime.utcnow(),
+            plan_amount=180.0,
+            issues_amount=40.0
         )
 
         session = self.session_mock()
@@ -132,12 +162,18 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
         invoice = Invoice(
             id=uuid4(),
             customer_id=uuid4(),
-            invoice_id=uuid4(),
+            invoice_id="INV004",
+            plan_id=uuid4(),
             amount=250.0,
             tax=25.0,
             total_amount=275.0,
             status="PAID",
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
+            start_at=datetime.utcnow(),
+            generation_date=datetime.utcnow(),
+            end_at=datetime.utcnow(),
+            plan_amount=220.0,
+            issues_amount=50.0
         )
 
         session = self.session_mock()
@@ -150,7 +186,7 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
     def test_sum_total_amount_by_customer_and_status(self):
         # Mock data
         customer_id = uuid4()
-        status = "PAID"
+        status = str(uuid4())
         total_amount = 500.0
 
         session = self.session_mock()
@@ -159,4 +195,3 @@ class TestInvoicePostgresqlRepository(unittest.TestCase):
         result = self.repo.sum_total_amount_by_customer_and_status(customer_id, status)
 
         self.assertEqual(result, total_amount)
-
