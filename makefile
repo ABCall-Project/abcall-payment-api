@@ -19,13 +19,17 @@ run:
 	fi
 
 run-tests:
+	 make docker-test-up
 	 FLASK_ENV=test python -m unittest discover -s tests -p '*Test.py' -v
+	 make docker-test-down
 
 run-tests-coverage:
-	 coverage run -m unittest discover -s tests -p '*Test.py' -v
+	 make docker-test-up
+	 FLASK_ENV=test coverage run -m unittest discover -s tests -p '*Test.py' -v
 	 coverage report -m
 	 coverage html
-	 coverage report --fail-under=50
+	 coverage report --fail-under=80
+	 make docker-test-down
 
 run-docker:
 ifeq ($(strip $(PORT)),)
@@ -48,6 +52,14 @@ docker-dev-up:
 
 docker-dev-down:
 	docker compose -f=docker-compose.develop.yml down
+
+docker-test-up:
+	docker compose -f=docker-compose.test.yml up --build -d
+	sleep 2
+
+docker-test-down:
+	make docker-db-truncate
+	docker compose -f=docker-compose.test.yml down
 
 create-database:
 	docker exec payment-local-db psql -U develop -d payment-db -f /docker-entrypoint-initdb.d/init.sql
