@@ -5,42 +5,49 @@ from uuid import UUID
 from ...domain.models import InvoiceDetail
 from ...domain.interfaces import InvoiceDetailRepository
 from ...infrastructure.databases.model_sqlalchemy import Base, InvoiceDetailModelSqlAlchemy
+from .postgres.db import Session, engine
 
 class InvoiceDetailPostgresqlRepository(InvoiceDetailRepository):
-    def __init__(self, connection_string: str):
-        self.engine = create_engine(connection_string)
-        self.Session = sessionmaker(bind=self.engine)
+    def __init__(self):
+        self.engine = engine
+        self.session = Session
         self._create_tables()
 
     def _create_tables(self):
         Base.metadata.create_all(self.engine)
 
     def create_invoice_detail(self,invoice_detail: InvoiceDetail):
-        session = self.Session()
-        session.add(self._to_model(invoice_detail))
-        session.commit()
+         with self.session() as session:
+            try:
+                session.add(self._to_model(invoice_detail))
+                session.commit()
+            finally:
+                session.close()
 
    
         
     
     def get_factured_issue_ids(self) -> List[UUID]:
-        with self.Session() as session:
-            factured_issue_ids = (
-                session.query(InvoiceDetailModelSqlAlchemy.issue_id)
-                .filter(InvoiceDetailModelSqlAlchemy.issue_id.isnot(None))
-                .distinct()
-                .all()
-            )
-            return [issue_id for (issue_id,) in factured_issue_ids]
+        with self.session() as session:
+            try:
+                factured_issue_ids = (
+                    session.query(InvoiceDetailModelSqlAlchemy.issue_id)
+                    .filter(InvoiceDetailModelSqlAlchemy.issue_id.isnot(None))
+                    .distinct()
+                    .all()
+                )
+                return [issue_id for (issue_id,) in factured_issue_ids]
+            finally:
+                session.close()
         
     
     def get_by_invoice_details_by_id(self, invoice_id: str):
-        session = self.Session()
-        try:
-            details_model= session.query(InvoiceDetailModelSqlAlchemy).filter_by(invoice_id=invoice_id).all()
-            return [self._from_model(detail_model) for detail_model in details_model]
-        finally:
-            session.close()
+        with self.session() as session:
+            try:
+                details_model= session.query(InvoiceDetailModelSqlAlchemy).filter_by(invoice_id=invoice_id).all()
+                return [self._from_model(detail_model) for detail_model in details_model]
+            finally:
+                session.close()
 
     def _to_model(self, invoice_detail: InvoiceDetail) -> InvoiceDetailModelSqlAlchemy:
         return InvoiceDetailModelSqlAlchemy(
@@ -70,9 +77,9 @@ class InvoiceDetailPostgresqlRepository(InvoiceDetailRepository):
     
 
     def get_total_amount_by_invoice_id(self, invoice_id: UUID) -> float:
-        session = self.Session()
-        try:
-            total_amount = session.query(func.sum(InvoiceDetailModelSqlAlchemy.total_amount)).filter_by(invoice_id=invoice_id).scalar()
-            return total_amount if total_amount else 0.0
-        finally:
-            session.close()
+        with self.session() as session:
+            try:
+                total_amount = session.query(func.sum(InvoiceDetailModelSqlAlchemy.total_amount)).filter_by(invoice_id=invoice_id).scalar()
+                return total_amount if total_amount else 0.0
+            finally:
+                session.close()

@@ -16,8 +16,8 @@ class Invoices(Resource):
 
     def __init__(self):
         config = Config()
-        self.repository = InvoicePostgresqlRepository(config.DATABASE_URI)
-        self.invoice_detail_repository=InvoiceDetailPostgresqlRepository(config.DATABASE_URI)
+        self.repository = InvoicePostgresqlRepository()
+        self.invoice_detail_repository=InvoiceDetailPostgresqlRepository()
         self.service = InvoiceService(self.repository,None,self.invoice_detail_repository)
         
 
