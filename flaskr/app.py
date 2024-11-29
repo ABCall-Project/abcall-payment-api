@@ -8,6 +8,8 @@ from .endpoint import HealthCheck, Invoices
 import signal
 import logging
 from flask_cors import CORS
+import newrelic.agent
+newrelic.agent.initialize('newrelic.ini')
 
 config = Config()
 
@@ -17,6 +19,7 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('default')
 app.json_encoder = JSONCustomEncoder
+logger.info('starting application ...')
 
 def before_server_stop(*args, **kwargs):
     logger.info('Closing application ...')
